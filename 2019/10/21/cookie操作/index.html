@@ -1,0 +1,192 @@
+<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  
+  <title>JS操作cookie、读取cookie、删除cookie，以及cookie清除不掉问题 | 夜猫子的个人博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  
+    <meta name="author" content="yemaozi1299">
+  
+  
+    <meta name="description" content="-">
+  
+  <meta name="description" content="-">
+<meta name="keywords" content="Hexo个人博客">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JS操作cookie、读取cookie、删除cookie，以及cookie清除不掉问题">
+<meta property="og:url" content="http://yemaozi1299.github.io/2019/10/21/cookie操作/index.html">
+<meta property="og:site_name" content="夜猫子的个人博客">
+<meta property="og:description" content="-">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://demo.richapps.cn/images/1571579668.jpg">
+<meta property="og:updated_time" content="2019-10-21T03:56:40.030Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JS操作cookie、读取cookie、删除cookie，以及cookie清除不掉问题">
+<meta name="twitter:description" content="-">
+<meta name="twitter:image" content="http://demo.richapps.cn/images/1571579668.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="夜猫子的个人博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+</head>
+</html>
+<body>
+  <div class="wrapper">
+    <header id="header">
+  <div class="title">
+    <h1><a href="/">夜猫子的个人博客</a></h1>
+    <p><a href="/">yemaozi1299·blog</a></p>
+  </div>
+  <nav class="nav">
+    <ul>
+      
+        <li><a href="/">Home</a></li>
+      
+        <li><a href="/archives">Archives</a></li>
+      
+      
+        <li><a href="/atom.xml">RSS</a></li>
+      
+    </ul>
+    <div class="clearfix"></div>
+  </nav>
+  <div class="clearfix"></div>
+</header>
+    <div class="content"><article class="post">
+  <header>
+    
+      <div class="icon"></div>
+      <a href="/2019/10/21/cookie操作/">
+  <time datetime="2019-10-21T02:44:11.000Z">
+    2019-10-21
+  </time>
+</a>
+    
+    
+  
+    <h1 class="title">JS操作cookie、读取cookie、删除cookie，以及cookie清除不掉问题</h1>
+  
+
+  </header>
+  
+  <div class="entry">
+    
+      <p>-</p>
+<a id="more"></a>
+<h1 id="JS操作cookie、读取cookie、删除cookie，以及cookie清除不掉问题"><a href="#JS操作cookie、读取cookie、删除cookie，以及cookie清除不掉问题" class="headerlink" title="JS操作cookie、读取cookie、删除cookie，以及cookie清除不掉问题"></a>JS操作cookie、读取cookie、删除cookie，以及cookie清除不掉问题</h1><hr>
+<p>JS设置cookie:</p>
+<pre><code>function setCookie(name, value) {
+    var exdate = new Date();
+    exdate.setMinutes(exdate.getMinutes() + 30);   //30为有效时间30分钟
+    document.cookie = name + &quot;=&quot; + escape(value) + &quot;;expires=&quot; + exdate.toGMTString();
+}
+
+//如果需要设定自定义过期时间
+//那么把上面的setCookie　函数换成下面两个函数就ok;
+//程序代码
+
+function setCookie(name, value, time) {
+    var strsec = getsec(time);
+    var exp = new Date();
+    exp.setTime(exp.getTime() + strsec * 1);
+    document.cookie = name + &quot;=&quot; + escape(value) + &quot;;expires=&quot; + exp.toGMTString();
+}
+
+//这是有设定过期时间的使用示例：
+//20s是代表20秒
+//h是指小时，如12小时则是：12h
+//d是天数，30天则：30h
+
+function getsec(str) {
+    var str1 = str.substring(0, str.length - 1) * 1;
+    var str2 = str.substring(str.length - 1);
+    if (str2 == &quot;s&quot;) {
+
+        return str1 * 1000;
+
+    } else if (str2 == &quot;h&quot;) {
+
+        return str1 * 60 * 60 * 1000;
+
+    } else if (str2 == &quot;d&quot;) {
+
+        return str1 * 24 * 60 * 60 * 1000;
+
+    }
+}</code></pre><p>JS获取Cookie:</p>
+<pre><code>function getCookie(name) {
+    var arr, reg = new RegExp(&quot;(^| )&quot; + name + &quot;=([^;]*)(;|$)&quot;);
+    if (arr = document.cookie.match(reg)){
+        return unescape(arr[2]);
+    }else{
+        return null;
+    }
+}</code></pre><p>JS删除Cookie:</p>
+<pre><code>function delCookie(name) {
+    var exdate = new Date();
+    exdate.setMinutes(exdate.getMinutes());   
+    var cval = getCookie(name);
+    if (cval != null){
+        document.cookie = name + &quot;=&quot; + cval + &quot;;expires=&quot; + exdate.toGMTString();
+    }
+}</code></pre><p>在删除Cookie的时候有时候会出现删不掉的情况，这个时候就得看Cookie的path路径</p>
+<p><img src="http://demo.richapps.cn/images/1571579668.jpg" alt="此处输入图片的描述"></p>
+<p>cookie的path一般默认为/，我们要在后面加上path=/;代码如下:</p>
+<pre><code>function delCookie(name) {
+    var exdate = new Date();
+    exdate.setMinutes(exdate.getMinutes());   
+    var cval = getCookie(name);
+    if (cval != null){
+        document.cookie = name + &quot;=&quot; + cval + &quot;;expires=&quot; + exdate.toGMTString() + &quot;;path=/&quot;
+    }
+}</code></pre><p>这样cookie就能被删除了，要注意的是删之前先看一下path的路径。</p>
+
+    
+  </div>
+  <footer>
+    
+      
+      
+    
+    <div class="clearfix"></div>
+  </footer>
+</article>
+
+</div>
+  </div>
+  <footer id="footer"><div class="copyright">
+  
+  &copy; 2019 <a href="/">yemaozi1299</a>
+  
+</div>
+<div class="theme-copyright">
+  Theme by <a href="https://github.com/orderedlist" target="_blank">orderedlist</a>
+   | 
+  Redesign by <a href="http://heroicyang.com/" target="_blank">Heroic Yang</a>
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+<script src="/js/scale.fix.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+  (function($){
+    $('.fancybox').fancybox();
+  })(jQuery);
+</script>
+
+</body>
+</html>
